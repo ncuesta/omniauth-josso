@@ -28,6 +28,12 @@ module OmniAuth
         }
       end
 
+      extra do
+        {
+          roles: agent.roles
+        }
+      end
+
       def agent
         @agent ||= Agent.new options.endpoint_url, request.params['josso_assertion_id']
       end
@@ -57,6 +63,13 @@ module OmniAuth
           @user ||= begin
             res = identity_manager.call :find_user_in_session, message: { 'in0' => session_id }
             res.to_hash[:multi_ref]
+          end
+        end
+
+        def roles
+          @roles ||= begin
+            res = identity_manager.call :find_roles_by_username, message: { 'in0' => user.first[:name] }
+            res.to_hash[:multi_ref].map { |h| h[:name] }
           end
         end
       end
