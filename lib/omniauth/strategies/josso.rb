@@ -69,7 +69,7 @@ module OmniAuth
         def roles
           @roles ||= begin
             res = identity_manager.call :find_roles_by_username, message: { 'in0' => user.first[:name] }
-            res.to_hash[:multi_ref].map { |h| h[:name] }
+            res.to_hash[:multi_ref]&.map { |h| h[:name] } || []
           end
         end
       end
